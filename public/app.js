@@ -1,16 +1,21 @@
 console.log("hello, everyone!");
 // Element variables
-const availableGamesContainer = document.querySelector(".availableGames");
+const availableGamesContainer = document.querySelector("#game");
 const addedGamesContainer = document.querySelector(".addedGames");
 const randomizerButton = document.querySelector(".randomizerButton");
 const randomGame = document.querySelector('.randomGame');
+const addGameForm = document.querySelector('#addGameForm');
+const gameSelected = document.querySelector('select');
 
 //Global Variables
 const games = ["Don't Panic", "Disney Trivia", "Disney Trivia II", "Wingspan", "Take Off", "Scattegories"];
 const addedGames = [];
+
+//Add Dynamic Content
 games.forEach((game, index) => {
-    availableGamesContainer.innerHTML += `<div>${game}<button data-index="${game}">Add Game</button></div>`;
+    availableGamesContainer.innerHTML += `<option value="${game}" >${game}</option>`;
 });
+
 
 
 
@@ -18,13 +23,20 @@ games.forEach((game, index) => {
 
 //Functions
 function addGame(e){
-    if (e.target.tagName === "BUTTON") {
-        addedGames.push(e.target.dataset.index);
-        addedGamesContainer.innerHTML = '';
-        addedGames.forEach((game, index) => {
-            addedGamesContainer.innerHTML += `<div>${game}<button data-index="${game}">Remove Game</button></div>`;
-        });
+    e.preventDefault();
+    const selectedGame = gameSelected.value;
+    if(!addedGames.includes(selectedGame)){
+        addedGames.push(selectedGame);
     }
+    displayGame();
+    
+}
+
+function displayGame() {
+    addedGamesContainer.innerHTML = '';
+        addedGames.forEach((game, index) => {
+        addedGamesContainer.innerHTML += `<div><p class="gameName">${game}</p><button data-index="${game}">Remove Game</button></div>`;
+    });
 }
 
 function getRandomGame() {
@@ -42,13 +54,10 @@ function getRandomGame() {
 
 function removeGame(e) {
     if (e.target.tagName === "BUTTON") {
-        console.log(addedGames);
-        console.log(addedGames[e.target.dataset.index])
-        addedGames.splice(addedGames[e.target.dataset.index], 1);
-        addedGamesContainer.innerHTML = '';
-        addedGames.forEach((game, index) => {
-            addedGamesContainer.innerHTML += `<div>${game}<button data-index="${game}">Remove Game</button></div>`;
-        });
+        const selectedGame = e.target.parentNode.querySelector(".gameName").textContent;
+        let index = addedGames.indexOf(selectedGame)
+        addedGames.splice(index, 1);
+        displayGame();
     }
 }
 
@@ -56,3 +65,4 @@ function removeGame(e) {
 availableGamesContainer.addEventListener('click', addGame);
 randomizerButton.addEventListener('click', getRandomGame);
 addedGamesContainer.addEventListener('click', removeGame);
+addGameForm.addEventListener('submit', addGame)
